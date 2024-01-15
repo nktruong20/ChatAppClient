@@ -1,0 +1,83 @@
+<div class="body-auth">
+    <div class="box-auth">
+        <div>
+            <h4>Đăng ký tài khoản</h4>
+        </div>
+        <form [formGroup]="formData" (ngSubmit)="onSubmit()">
+            <div class="my-4">
+                <div class="form-group">
+                    <input type="text" formControlName="FullName" placeholder="Họ và tên" class="form-control"
+                        style="font-size:14px">
+                    <div *ngIf="submitted && formData.get('FullName')?.invalid" class="invalid-prms">
+                        <div *ngIf="formData.get('FullName')?.hasError('required')">
+                            Trường yêu cầu bắt buộc.
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="text" formControlName="UserName" placeholder="Tên đăng nhập" class="form-control"
+                        style="font-size:14px">
+                    <div *ngIf="submitted && formData.get('UserName')?.invalid" class="invalid-prms">
+                        <div *ngIf="formData.get('UserName')?.hasError('required')">
+                            Trường yêu cầu bắt buộc.
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="email" formControlName="Email" placeholder="Email" class="form-control"
+                        style="font-size:14px">
+                    <div *ngIf="submitted && formData.get('Email')?.invalid" class="invalid-prms">
+                        <div *ngIf="formData.get('Email')?.hasError('required')">
+                            Trường yêu cầu bắt buộc.
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="text" formControlName="Phone" placeholder="Số điện thoại" class="form-control"
+                        style="font-size:14px">
+                    <div *ngIf="submitted && formData.get('Phone')?.invalid" class="invalid-prms">
+                        <div *ngIf="formData.get('Phone')?.hasError('required')">
+                            Trường yêu cầu bắt buộc.
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="password" formControlName="Password" class="form-control" placeholder="Mật khẩu"
+                        style="font-size:14px">
+                    <div *ngIf="submitted && formData.get('Password')?.invalid" class="invalid-prms">
+                        <div *ngIf="formData.get('Password')?.hasError('required')">
+                            Trường yêu cầu bắt buộc.
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" formControlName="CheckTerm" class="custom-control-input"
+                                    id="inpCheck">
+                                <label class="custom-control-label" for="inpCheck">
+                                    Tôi đồng ý với chính sách bảo mật và điều khoản dịch vụ.
+                                </label>
+                            </div>
+                            <div *ngIf="submitted && !formData.get('CheckTerm')?.value" class="invalid-prms">
+                                <div>
+                                    Trường yêu cầu bắt buộc.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block mb-4">Đăng ký</button>
+                </div>
+            </div>
+        </form>
+        <div class="text-center">
+            <p class="mt-4">
+                Bạn đã có tài khoản?
+                <a routerLink="/dang-nhap">Đăng nhập</a>
+            </p>
+        </div>
+    </div>
+</div>

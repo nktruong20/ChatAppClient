@@ -1,0 +1,41 @@
+<ng-container *ngIf="groupCall == null; else elseTemplate">
+    <app-default [title]="'Cuộc gọi'"></app-default>
+</ng-container>
+<ng-template #elseTemplate>
+    <div class="main-box-call">
+        <div class="main-box-call-header">
+            <div class="box-avatar mr-1">
+                <img [src]="groupCall.Avatar | pipeHostFile" alt="">
+                <span>{{groupCall.Name}}</span>
+            </div>
+        </div>
+        <div class="box-main-call">
+            <ul class="list-group">
+                <li *ngFor="let call of calls" class="list-group-item">
+                    <div class="list-call-detail">
+                        <div>
+                            <i *ngIf="call.Status == 'MISSED'" class="mdi mdi-phone-missed"></i>
+                            <i *ngIf="call.Status == 'OUT_GOING'" class="mdi mdi-phone-outgoing"></i>
+                            <i *ngIf="call.Status == 'IN_COMMING'" class="mdi mdi-phone-incoming"></i>
+                            <div>
+                                <div>
+                                    <b *ngIf="call.Status == 'MISSED'">Cuộc gọi nhỡ</b>
+                                    <b *ngIf="call.Status == 'OUT_GOING'">Cuộc gọi đi</b>
+                                    <b *ngIf="call.Status == 'IN_COMMING'">Cuộc gọi đến</b>
+                                </div>
+                                <div>
+                                    <small>{{call.Created | chatDate}}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <span (click)="callVideo(call.UserCode)" class="span-call span-call-video">
+                                <i class="mdi mdi-video"></i>
+                            </span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</ng-template>

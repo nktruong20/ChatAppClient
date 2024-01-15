@@ -1,0 +1,10 @@
+.box-group-info {
+  position: relative;
+}
+
+.box-group-info i {
+  position: absolute;
+  top: 10px;
+  left: calc(50% + 30px);
+  cursor: pointer;
+}

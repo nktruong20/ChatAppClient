@@ -1,0 +1,34 @@
+<div class="box-left-content-title">
+    <strong class="size-13">Tất cả</strong>
+</div>
+<div class="box-left-content-body">
+    <ul class="list-unstyled">
+        <li *ngFor="let item of datas; index as index">
+            <div (click)="openCall(item.Code)" class="box-call" [ngClass]="{'active': groupCallSelected == item.Code}">
+                <div class="user-avatar">
+                    <img [src]="item.Avatar | pipeHostFile" alt="">
+                </div>
+                <div class="box-call-detail">
+                    <div>
+                        <div class="box-call-detail-name">
+                            {{item.Name}}
+                        </div>
+                        <div *ngIf="item.LastCall != null" class="box-call-detail-status"
+                            [ngClass]="{'text-danger': item.LastCall.Status == 'MISSED'}">
+                            <i *ngIf="item.LastCall.Status == 'MISSED'" class="mdi mdi-call-missed"></i>
+                            <i *ngIf="item.LastCall.Status == 'OUT_GOING'" class="mdi mdi-call-made"></i>
+                            <i *ngIf="item.LastCall.Status == 'IN_COMMING'" class="mdi mdi-call-received"></i>
+                            <span>{{item.LastCall.Created | chatDate}}</span>
+                        </div>
+                    </div>
+                    <div class="box-call-detail-control">
+                        <span *ngIf="item.LastCall != null" (click)="callVideo(item.LastCall.UserCode)"
+                            class="icon-control">
+                            <i class="mdi mdi-video-outline"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>

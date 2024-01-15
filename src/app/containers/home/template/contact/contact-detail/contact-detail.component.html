@@ -1,0 +1,59 @@
+<ng-container *ngIf="toggleTabChat; else templateContact">
+    <app-message-detail [contact]="contact"></app-message-detail>
+</ng-container>
+<ng-template #templateContact>
+    <ng-container *ngIf="contact == null; else elseTemplate">
+        <app-default [title]="'Danh bạ'"></app-default>
+    </ng-container>
+    <ng-template #elseTemplate>
+        <div class="main-box-contact">
+            <div class="box-right-content-header-default">
+                <b>Thông tin liên hệ</b>
+            </div>
+            <div class="box-main-contact">
+                <div class="box-main-contact-body">
+                    <div>
+                        <img [src]="contact.Avatar | pipeHostFile" alt="">
+                    </div>
+                    <div class="mt-2 mb-2">
+                        <h4 class="text-center">
+                            {{contact.FullName}}
+                        </h4>
+                    </div>
+                    <div class="box-main-contact-control">
+                        <div (click)="chat()">
+                            <i class="mdi mdi-message-text"></i>
+                            <span>Nhắn tin</span>
+                        </div>
+                        <div (click)="callVideo()">
+                            <i class="mdi mdi-account-box-outline"></i>
+                            <span>Cuộc gọi video</span>
+                        </div>
+                    </div>
+                    <div class="box-main-contact-body-detail">
+                        <div>
+                            <i class="mdi mdi-gender-male-female"></i>
+                            <span>{{contact.Gender}}</span>
+                        </div>
+                        <div>
+                            <i class="mdi mdi-cake"></i>
+                            <span>{{contact.Dob}}</span>
+                        </div>
+                        <div>
+                            <i class="mdi mdi-cellphone"></i>
+                            <span>{{contact.Phone}}</span>
+                        </div>
+                        <div>
+                            <i class="mdi mdi-email-outline"></i>
+                            <span>{{contact.Email}}</span>
+                        </div>
+                        <div>
+                            <i class="mdi mdi-map-marker"></i>
+                            <span>{{contact.Address}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</ng-template>

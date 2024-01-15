@@ -1,0 +1,19 @@
+<div class="box-left-content-title">
+    <strong class="size-13">Bạn bè ({{contacts.length}})</strong>
+</div>
+<div class="box-left-content-body">
+    <ul class="list-unstyled">
+        <li *ngFor="let contact of contacts; index as index">
+            <div (click)="openContact(index)" class="box-contact" [ngClass]="{'active': itemIndexSelected == index}">
+                <div class="user-avatar">
+                    <img [src]="contact.Avatar | pipeHostFile" alt="">
+                </div>
+                <div class="box-contact-detail">
+                    <div class="box-contact-detail-name">
+                        {{contact.FullName}}
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>

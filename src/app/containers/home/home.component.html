@@ -1,0 +1,292 @@
+<div class="body-vchat">
+    <div class="body-vchat-left">
+        <div *ngIf="currentUser !=null" class="body-vchat-left-header">
+            <div (click)="openModalProfile()" class="box-avatar">
+                <img [src]="currentUser.Avatar | pipeHostFile">
+                <span>{{currentUser.FullName.split(' ').pop()}}</span>
+            </div>
+            <div class="box-add-user-group">
+                <span (click)="openModalAddContact()" class="icon-control" title="Thêm liên hệ">
+                    <i class="mdi mdi-account-plus"></i>
+                </span>
+                <span (click)="openModalAddGroup()" class="icon-control" title="Tạo nhóm">
+                    <i class="mdi mdi-account-group"></i>
+                </span>
+            </div>
+        </div>
+        <!-- <div class="tab-header">
+            <div *ngFor="let item of tabControls; index as index" class="tab-icon"
+                [ngClass]="{'active': tabIndexSelected == index}">
+                <div (click)="clickTab(index)">
+                    <i [class]="'mdi ' + item.iconClass"></i>
+                    <span>{{item.title}}</span>
+                </div>
+            </div>
+        </div> -->
+        <div class="tab-body">
+            <div [hidden]="tabIndexSelected != 0">
+                <app-list-message #listMessage (onClick)="onClickMessage($event)"></app-list-message>
+            </div>
+            <div [hidden]="tabIndexSelected != 1">
+                <app-list-call #listCall (onClick)="onClickCall($event)"></app-list-call>
+            </div>
+            <div [hidden]="tabIndexSelected != 2">
+                <app-list-contact #listContact (onClick)="onClickContact($event)"></app-list-contact>
+            </div>
+            <div [hidden]="tabIndexSelected != 3">
+                <app-list-notification></app-list-notification>
+            </div>
+        </div>
+    </div>
+    <div [ngSwitch]="tabIndexSelected" class="body-vchat-right">
+        <div *ngSwitchCase="0">
+            <app-message-detail [group]="filter.group"></app-message-detail>
+        </div>
+        <div *ngSwitchCase="1">
+            <app-call-detail [groupCall]="filter.groupCall"></app-call-detail>
+        </div>
+        <div *ngSwitchCase="2">
+            <app-contact-detail [contact]="filter.contact"></app-contact-detail>
+        </div>
+        <div *ngSwitchCase="3">
+            <app-notification-detail></app-notification-detail>
+        </div>
+        <div *ngSwitchDefault>
+            <app-default [title]="'VChat'"></app-default>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAddContact">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title">Thêm liên hệ</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <input [(ngModel)]="filter.keySearch" type="text" class="form-control"
+                                placeholder="Tên liên hệ, sđt, email">
+                        </div>
+                        <div class="list-contact-adding">
+                            <ul class="list-unstyled">
+                                <li *ngFor="let contact of contactSearchs">
+                                    <div class="contacts">
+                                        <div class="contacts-avatar">
+                                            <img [src]="contact.Avatar | pipeHostFile" alt="">
+                                            <span>{{contact.FullName}}</span>
+                                        </div>
+                                        <div class="contacts-control">
+                                            <div (click)="submitAddContact(contact)" class="contacts-control-sendmess">
+                                                <i class="mdi mdi-plus"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                        Hủy
+                    </button>
+                    <button (click)="searchContact()" type="button" class="btn btn-primary btn-sm">
+                        Tìm kiếm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAddGroup">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title">Tạo nhóm</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <input [(ngModel)]="filter.groupName" type="text" class="form-control"
+                                placeholder="Tên nhóm">
+                        </div>
+                        <div>
+                            <div class="mb-2">
+                                <small><u>Thành viên</u></small>
+                            </div>
+                            <ng-container *ngFor="let member of memberInNewGroup">
+                                <div *ngIf="member.fieldStamp1" class="box-member-in-group">
+                                    <img [src]="member.Avatar | pipeHostFile">
+                                    <span (click)="removeMemberToGroup(member)" class="remove-member">X</span>
+                                </div>
+                            </ng-container>
+                        </div>
+                        <div style="clear: both;margin-top: 14px;overflow: hidden;">
+                            <hr>
+                        </div>
+                        <div class="list-contact-adding">
+                            <ul class="list-unstyled">
+                                <li *ngFor="let member of memberInNewGroup">
+                                    <div *ngIf="!member.fieldStamp1" class="contacts">
+                                        <div class="contacts-avatar">
+                                            <img [src]="member.Avatar | pipeHostFile" alt="">
+                                            <span>{{member.FullName}}</span>
+                                        </div>
+                                        <div class="contacts-control">
+                                            <div (click)="addMemberToGroup(member)" class="contacts-control-sendmess">
+                                                <i class="mdi mdi-plus"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                        Hủy
+                    </button>
+                    <button (click)="submitAddGroup()" type="button" class="btn btn-primary btn-sm">
+                        Tạo nhóm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalProfile">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title">Thông tin cá nhân</h5>
+            </div>
+            <div class="modal-body" style="font-size: 14px;">
+                <div class="row">
+                    <div class="col-md-4">
+                        <button-upload (onload)="onloadAvatar($event)" [srcDefault]="userProfile.Avatar">
+                        </button-upload>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Họ và tên</label>
+                                    <input [(ngModel)]="userProfile.FullName" type="text"
+                                        class="form-control form-control-sm">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Giới tính</label>
+                                    <select [(ngModel)]="userProfile.Gender" class="form-control form-control-sm">
+                                        <option value="">---</option>
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Ngày sinh</label>
+                                    <input [(ngModel)]="userProfile.Dob" type="text"
+                                        class="form-control form-control-sm">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Số điện thoại</label>
+                                    <input [(ngModel)]="userProfile.Phone" type="text"
+                                        class="form-control form-control-sm">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input [(ngModel)]="userProfile.Email" type="text"
+                                        class="form-control form-control-sm">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Địa chỉ</label>
+                                    <textarea [(ngModel)]="userProfile.Address" rows="2"
+                                        class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                        Đóng
+                    </button>
+                    <button (click)="updateProfile()" type="button" class="btn btn-primary btn-sm">
+                        Cập nhật
+                    </button>
+                    <button (click)="navigate('/dang-xuat')" type="button" class="btn btn-danger btn-sm float-right">
+                        Đăng xuất
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modalInComingCall" data-keyboard="false" data-backdrop="false">
+    <div class="modal-dialog modal-dialog-full">
+        <div class="modal-content">
+            <div class="modal-body">
+                <iframe id="inComingCallIframe" src="" frameborder="0" allow="camera *;microphone *"></iframe>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button (click)="rejectCall()" type="button" class="btn btn-danger btn-sm">
+                        Đóng cuộc gọi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalOutgoingCall" data-keyboard="false" data-backdrop="false">
+    <div class="modal-dialog modal-dialog-full">
+        <div class="modal-content">
+            <div class="modal-body">
+                <iframe id="outgoingCallIframe" src="" frameborder="0" allow="camera *;microphone *"></iframe>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button (click)="cancelVideoCall()" type="button" class="btn btn-danger btn-sm">
+                        Đóng cuộc gọi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ngx-spinner></ngx-spinner>

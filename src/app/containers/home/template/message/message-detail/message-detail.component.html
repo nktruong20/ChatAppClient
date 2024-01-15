@@ -1,0 +1,186 @@
+<div [hidden]="group != null || contact != null">
+    <app-default [title]="'Tin nhắn'"></app-default>
+</div>
+<div [hidden]="group == null && contact == null">
+    <div class="main-box-chat">
+        <div class="box-chat">
+            <div class="box-chat-header">
+                <div class="box-avatar">
+                    <ng-container *ngIf="group != null ">
+                        <img [src]="group.Avatar | pipeHostFile" alt="">
+                        <span>{{group.Name}}</span>
+                    </ng-container>
+                    <ng-container *ngIf="contact != null">
+                        <img [src]="contact.Avatar | pipeHostFile" alt="">
+                        <span>{{contact.FullName}}</span>
+                    </ng-container>
+                </div>
+                <div class="box-add-user-group">
+                    <span *ngIf="groupInfo != null && !groupInfo.IsGroup" (click)="callVideo()" class="icon-control"
+                        title="Gọi video">
+                        <i class="mdi mdi-video-outline"></i>
+                    </span>
+                    <span (click)="toggleContact()" class="icon-control contact-control" title="Thông tin hội thoại">
+                        <i class="mdi mdi-dots-vertical"></i>
+                    </span>
+                </div>
+            </div>
+            <div #scroll [scrollTop]="scroll.scrollHeight" class="box-chat-body">
+                <div *ngIf="currentUser != null" class="box-message">
+                    <div *ngFor="let item of messages; index as index">
+                        <div *ngIf="currentUser.User != item.CreatedBy" class="box-message-send">
+                            <div class="box-message-img">
+                                <img [src]="item.UserCreatedBy.Avatar | pipeHostFile" alt="">
+                            </div>
+                            <div class="box-message-content">
+                                <div class="box-message-content-message">
+                                    <div class="box-message-content-message-content">
+                                        <ng-container *ngIf="item.Type == 'text'">
+                                            <div [innerHTML]="item.Content"></div>
+                                        </ng-container>
+                                        <ng-container *ngIf="item.Type == 'attachment'">
+                                            <i class="mdi mdi-file-document"></i>
+                                            <div [innerHTML]="item.Content" style="display: inline-block;"></div>
+                                        </ng-container>
+                                        <ng-container *ngIf="item.Type == 'media'">
+                                            <img class="img-message" [src]="item.Path | pipeHostFile" alt="Img">
+                                        </ng-container>
+                                    </div>
+                                    <div class="box-message-content-message-time">
+                                        <span>{{item.Created | chatDate}}</span>
+                                    </div>
+                                </div>
+                                <div (click)="downloadFile(item.Path,item.Content)" *ngIf="item.Type != 'text'"
+                                    class="box-message-download">
+                                    <i class="mdi mdi-download"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="currentUser.User == item.CreatedBy" class="box-message-received">
+                            <div class="box-message-content">
+                                <div (click)="downloadFile(item.Path,item.Content)" *ngIf="item.Type != 'text'"
+                                    class="box-message-download">
+                                    <i class="mdi mdi-download"></i>
+                                </div>
+                                <div class="box-message-content-message">
+                                    <div class="box-message-content-message-content">
+                                        <ng-container *ngIf="item.Type == 'text'">
+                                            <div [innerHTML]="item.Content"></div>
+                                        </ng-container>
+                                        <ng-container *ngIf="item.Type == 'attachment'">
+                                            <i class="mdi mdi-file-document"></i>
+                                            <div [innerHTML]="item.Content" style="display: inline-block;"></div>
+                                        </ng-container>
+                                        <ng-container *ngIf="item.Type == 'media'">
+                                            <img class="img-message" [src]="item.Path | pipeHostFile" alt="Img">
+                                        </ng-container>
+                                    </div>
+                                    <div class="box-message-content-message-time">
+                                        <span>{{item.Created | chatDate}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box-message-img">
+                                <img [src]="item.UserCreatedBy.Avatar | pipeHostFile" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-chat-send">
+                <div class="box-chat-send-media">
+                    <span class="mr-1">
+                        <i onclick="$('#file_attach_upload').click()" class="mdi mdi-attachment"></i>
+                        <input type='file' [hidden]="true" (change)="sendFile($event)" id="file_attach_upload"
+                            accept=".xlsx,.xls,.csv,.doc,.docx">
+                    </span>
+                    <span>
+                        <i onclick="$('#image_attach_upload').click()" class="mdi mdi-camera"></i>
+                        <input type='file' [hidden]="true" (change)="sendImage($event)" id="image_attach_upload"
+                            accept=".gif,.jpg,.jpeg,.png">
+                    </span>
+                </div>
+                <div class="box-chat-send-text">
+                    <textarea (keydown)="onKeydown($event)" [(ngModel)]="textMessage" class="form-control" rows="1"
+                        placeholder="Nhập nội dung tin nhắn"></textarea>
+                </div>
+                <div (click)="sendMessage()" class="btn-send-message">
+                    <span title="Gửi">
+                        <i class="mdi mdi-send"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="box-contact-info">
+            <ng-container *ngIf="groupInfo != null">
+                <ng-container *ngIf="groupInfo.IsGroup">
+                    <div class="box-contact-info-header">
+                        <strong>Thông tin nhóm</strong>
+                    </div>
+                    <div class="box-contact-info-body">
+                        <div class="box-group-info">
+                            <img [src]="groupInfo.Avatar | pipeHostFile" alt="">
+                            <i onclick="$('#image_group_upload').click()" class="mdi mdi-camera"></i>
+                            <input type='file' [hidden]="true" (change)="updateGroupAvatar($event)"
+                                id="image_group_upload" accept=".jpg,.jpeg,.png">
+                        </div>
+                        <div>
+                            <h6 style="display: block; margin: 0 auto;">
+                                {{groupInfo.FullName}}
+                            </h6>
+                        </div>
+                        <div class="mt-1">
+                            <u>Danh sách thành viên</u>
+                        </div>
+                        <div class="mt-2 list-member-in-group">
+                            <ul class="list-unstyled">
+                                <li *ngFor="let member of groupInfo.Users">
+                                    <div class="user-avatar">
+                                        <img [src]="member.Avatar | pipeHostFile"
+                                            style="margin-right: 10px !important;">
+                                        <span>{{member.FullName}}</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="!groupInfo.IsGroup">
+                    <div class="box-contact-info-header">
+                        <strong>Thông tin liên lạc</strong>
+                    </div>
+                    <div class="box-contact-info-body">
+                        <div>
+                            <img [src]="groupInfo.Avatar | pipeHostFile" alt="">
+                        </div>
+                        <div>
+                            <h6 style="display: block; margin: 0 auto;">
+                                {{groupInfo.FullName}}
+                            </h6>
+                        </div>
+                        <div>
+                            <i class="mdi mdi-gender-male-female"></i>
+                            <span>{{groupInfo.Gender}}</span>
+                        </div>
+                        <div>
+                            <i class="mdi mdi-cake"></i>
+                            <span>{{groupInfo.Dob}}</span>
+                        </div>
+                        <div>
+                            <i class="mdi mdi-cellphone"></i>
+                            <span>{{groupInfo.Phone}}</span>
+                        </div>
+                        <div>
+                            <i class="mdi mdi-email-outline"></i>
+                            <span>{{groupInfo.Email}}</span>
+                        </div>
+                        <div>
+                            <i class="mdi mdi-map-marker"></i>
+                            <span>{{groupInfo.Address}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+    </div>
+</div>
